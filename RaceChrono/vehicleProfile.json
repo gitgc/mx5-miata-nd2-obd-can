@@ -9,10 +9,6 @@
             "infoId":2
         },
         {
-            "value":"RF",
-            "infoId":3
-        },
-        {
             "value":"ND2",
             "infoId":4
         },
@@ -52,28 +48,28 @@
     "customChannels":[
         {
             "pid":2238982,
-            "equation":"(B * 1.2) - 4.5",
+            "equation":"(B * 1.373) - 18",
             "obdHeader":1824,
             "channelId":132086,
             "deviceType":5
         },
         {
             "pid":2238983,
-            "equation":"(B * 1.2) - 0.5",
+            "equation":"(B * 1.373) - 23",
             "obdHeader":1824,
             "channelId":164854,
             "deviceType":5
         },
         {
             "pid":2238981,
-            "equation":"(B * 1.2) - 2",
+            "equation":"(B * 1.373) - 19",
             "obdHeader":1824,
             "channelId":197622,
             "deviceType":5
         },
         {
             "pid":2238984,
-            "equation":"(B * 1.2) + 0.5",
+            "equation":"(B * 1.373) - 23",
             "obdHeader":1824,
             "channelId":99318,
             "deviceType":5
@@ -174,13 +170,6 @@
             "equation":"(bytesToUint(raw, 6, 2) - 10000) \/ 360.0",
             "obdHeader":0,
             "channelId":99319,
-            "deviceType":12
-        },
-        {
-            "pid":1,
-            "equation":"bytesToUInt(raw,0,2)",
-            "obdHeader":0,
-            "channelId":1014,
             "deviceType":12
         },
         {

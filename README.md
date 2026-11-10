@@ -44,21 +44,14 @@ The profile is in [`RaceChrono/vehicleProfile.json`](RaceChrono/vehicleProfile.j
 | Wheel Speed RL | `533` (0x215) | `m/s` | `(bytesToUInt(raw, 4, 2) - 10000) / 360.0` | 100 Hz | Verified | |
 | Wheel Speed RR | `533` (0x215) | `m/s` | `(bytesToUInt(raw, 6, 2) - 10000) / 360.0` | 100 Hz | Verified | |
 | Coolant Temperature | `1056` (0x420) | `°C` | `A - 40` | 10 Hz | Verified | Matched OBD PID 0x05 within 1 °C from a 12 °C cold start to 63 °C. |
-| Intake Air Temperature | `1274` (0x4FA) | `°C` | `E - 40` | 10 Hz | Verified | **Fixed.** The old equation (0x420 byte 4) was a status byte: it read 26 °C with the engine off and −40 °C with it running. This field tracked OBD PID 0x0F within 1 °C (11–16 °C). |
-| Manifold Absolute Pressure | `253` (0x0FD) | `kPa` | `G` | 50 Hz | Verified | **New.** Matched OBD PID 0x0B: 100 kPa with the engine off, ~30 kPa at idle, ~70 kPa on a throttle blip, ~19 kPa on overrun. |
+| Intake Air Temperature | `1274` (0x4FA) | `°C` | `E - 40` | 10 Hz | Verified | Tracks OBD PID 0x0F within 1 °C. 0x420 byte 4 is a status byte, not IAT. |
+| Manifold Absolute Pressure | `253` (0x0FD) | `kPa` | `G` | 50 Hz | Verified | Tracks OBD PID 0x0B: 100 kPa engine off, ~30 kPa at idle, ~19 kPa on overrun. |
 | Fuel Level | `1087` (0x43F) | `%` | `((40895 - bytesToUInt(raw, 0, 2))) * 100 / 34944` | 20 Hz | Verified (engine off) | Matches OBD PID 0x2F with the engine off (63.7% vs 63.5%). The raw value jumps ~7.5 points lower when the engine starts and stays there; not yet compared with OBD while running. |
-| Longitudinal Acceleration | `120` (0x078) | `m/s²` | `bitsToUInt(raw, 2, 14) * 0.005 - 40` | 50 Hz | Experimental | **New.** DSC accelerometer. Reads ~0.05 at rest and responds to rocking the car. Scale is from the Mazda 2017+ platform DBC (comma.ai opendbc). Sign not yet confirmed. |
-| Lateral Acceleration | `121` (0x079) | `m/s²` | `bitsToUInt(raw, 2, 14) * 0.005 - 40` | 50 Hz | Experimental | **New.** Same encoding as longitudinal. Reads ~−0.25 at rest (driveway slope) and shows engine-roll vibration at idle. Lateral/longitudinal assignment and sign not yet confirmed on a drive. |
-| Yaw Rate | `120` (0x078) | `°/s` | `bitsToInt(raw, 16, 11) * 0.1` | 50 Hz | Experimental | **New.** Gyro-like signal: low vibration sensitivity, ~0.5 °/s bias at rest. A redundant copy is in 0x079 (`bitsToUInt(raw, 30, 12) - 2048`, r = 0.99). The 0.1 °/s scale is a best guess. |
+| Longitudinal Acceleration | `120` (0x078) | `m/s²` | `bitsToUInt(raw, 2, 14) * 0.005 - 40` | 50 Hz | Experimental | DSC accelerometer. Scale from the Mazda 2017+ DBC (comma.ai opendbc). Sign unconfirmed. |
+| Lateral Acceleration | `121` (0x079) | `m/s²` | `bitsToUInt(raw, 2, 14) * 0.005 - 40` | 50 Hz | Experimental | DSC accelerometer, same encoding as longitudinal. Axis assignment and sign unconfirmed. |
+| Yaw Rate | `120` (0x078) | `°/s` | `bitsToInt(raw, 16, 11) * 0.1` | 50 Hz | Experimental | DSC gyro. Redundant copy in 0x079: `bitsToUInt(raw, 30, 12) - 2048`. Scale unconfirmed. |
 
 FL/FR/RL/RR wheel speeds confirmed by raising the car and manually rotating individual wheels.
-
-### Removed from the profile
-
-| Channel | Why |
-| --- | --- |
-| Ambient Air Temperature (`1056`, bytes 6–7) | Those bytes are constant (`F2 2F`) in every capture, so the channel always read 23.2 °C. OBD said 8 °C in one capture and 14 °C in another. No CAN field on this bus tracks ambient temperature (see below). |
-| Tyre Pressure FL/FR/RL/RR (OBD-II) | Not available on CAN; see below. Removed because the profile is now CAN-only. |
 
 ### Verifying the experimental channels
 
@@ -73,7 +66,7 @@ RaceChrono records the phone's (or GPS module's) own acceleration and gyro along
 These were looked for and are **not** broadcast on the OBD-port CAN bus (pins 6/14):
 
 * **Tyre pressures.** The TPMS receiver is in the instrument cluster, and the pressures are only returned as a diagnostic (UDS) response to a request (`0x720` → `0x728`, service `0x22`, DIDs `0x2A05`–`0x2A08`). No broadcast frame carries them. RaceChrono's CAN-Bus mode only listens and never sends requests, so tyre pressures need a second adapter in OBD-II mode (see [Legacy OBD-II channels](#legacy-obd-ii-channels)).
-* **Ambient air temperature.** OBD PID 0x46 works, but no CAN field matches it. It's probably carried on the body CAN bus, which isn't on pins 6/14.
+* **Ambient air temperature.** OBD PID 0x46 works, but no CAN field matches it. 0x420 bytes 6–7, sometimes used for ambient, are constant (`F2 2F`). It's probably carried on the body CAN bus, which isn't on pins 6/14.
 * **Battery / system voltage.** Not found: no CAN field dips during cranking or rises with the alternator.
 * **Engine oil temperature / oil pressure.** The ND2 PCM doesn't support OBD PID 0x5C and there's no oil temperature gauge; nothing on CAN looks like either.
 

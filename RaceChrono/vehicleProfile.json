@@ -30,12 +30,6 @@
     "selectedChannels":[
         {
             "deviceType":5,
-            "channelIds":[
-                164854,
-                132086,
-                197622,
-                99318
-            ],
             "priority":1
         },
         {
@@ -46,34 +40,6 @@
     "localUuid":"36aef79611b267953afdf1388d4355aa815ae6c56cbdc80bb91d52f01c81baac",
     "obdNonStandard":false,
     "customChannels":[
-        {
-            "pid":2238982,
-            "equation":"(B * 1.373) - 18",
-            "obdHeader":1824,
-            "channelId":132086,
-            "deviceType":5
-        },
-        {
-            "pid":2238983,
-            "equation":"(B * 1.373) - 23",
-            "obdHeader":1824,
-            "channelId":164854,
-            "deviceType":5
-        },
-        {
-            "pid":2238981,
-            "equation":"(B * 1.373) - 19",
-            "obdHeader":1824,
-            "channelId":197622,
-            "deviceType":5
-        },
-        {
-            "pid":2238984,
-            "equation":"(B * 1.373) - 23",
-            "obdHeader":1824,
-            "channelId":99318,
-            "deviceType":5
-        },
         {
             "pid":514,
             "equation":"bytesToUInt(raw, 2, 2) \/ 360.0",
@@ -131,17 +97,38 @@
             "deviceType":12
         },
         {
-            "pid":1056,
-            "equation":"bytesToUInt(raw, 4, 1) - 40",
+            "pid":1274,
+            "equation":"E - 40",
             "obdHeader":0,
             "channelId":10029,
             "deviceType":12
         },
         {
-            "pid":1056,
-            "equation":"((bytesToUInt(raw, 6, 2) - 65536) * 0.25 + 3200) \/ 100",
+            "pid":253,
+            "equation":"G",
             "obdHeader":0,
-            "channelId":10031,
+            "channelId":10027,
+            "deviceType":12
+        },
+        {
+            "pid":120,
+            "equation":"bitsToUInt(raw, 2, 14) * 0.005 - 40",
+            "obdHeader":0,
+            "channelId":8,
+            "deviceType":12
+        },
+        {
+            "pid":121,
+            "equation":"bitsToUInt(raw, 2, 14) * 0.005 - 40",
+            "obdHeader":0,
+            "channelId":7,
+            "deviceType":12
+        },
+        {
+            "pid":120,
+            "equation":"bitsToInt(raw, 16, 11) * 0.1",
+            "obdHeader":0,
+            "channelId":40,
             "deviceType":12
         },
         {
